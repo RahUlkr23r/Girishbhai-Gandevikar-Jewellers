@@ -6,6 +6,8 @@ import { useGoldRates } from '../context/GoldRatesContext';
 import SchemeCalculator from '../components/SchemeCalculator';
 import CursorGlow from '../components/ui/CursorGlow';
 import TiltCard from '../components/ui/TiltCard';
+import Carousel from '../components/ui/Carousel';
+import Marquee from '../components/ui/Marquee';
 import { useParallax } from '../hooks/useParallax';
 import {
   Sparkles,
@@ -26,18 +28,17 @@ export default function HomePage() {
   const { openRates } = useGoldRates();
   const reduce = useReducedMotion();
 
-  // Hero parallax
+  // Hero parallax (scroll-linked with Framer Motion)
   const heroRef = useRef(null);
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
-  // FIX #3: reduced drift amounts so content never visibly overlaps the next section
-  const heroVideoY = useTransform(heroProgress, [0, 1], ['0%', '12%']);
-  const heroContentY = useTransform(heroProgress, [0, 1], ['0%', '6%']);
-  const heroOpacity = useTransform(heroProgress, [0, 0.85], [1, 0]);
+  const heroVideoY = useTransform(heroProgress, [0, 1], ['0%', '18%']);
+  const heroContentY = useTransform(heroProgress, [0, 1], ['0%', '35%']);
+  const heroOpacity = useTransform(heroProgress, [0, 0.8], [1, 0]);
 
-  // Section-level parallax
+  // Section-level parallax (lightweight hook)
   const philosophyImageRef = useParallax(0.12);
   const philosophyBgRef = useParallax(0.08);
   const schemeBgRef = useParallax(0.1);
@@ -84,26 +85,23 @@ export default function HomePage() {
           style={{ y: reduce ? 0 : heroVideoY }}
           className="absolute inset-0 will-change-transform"
         >
-          {/* FIX #6: wrapper with role="img" so aria-label is announced */}
-          <div role="img" aria-label="Girishbhai Gandevikar Jewellers — Heritage Bridal Showcase" className="w-full h-full">
-            <video
-              className="absolute inset-0 w-full h-full object-cover opacity-45 pointer-events-none scale-110"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              poster="/images/hero_poster.webp"
-            >
-              <source src="/images/download.mp4" type="video/mp4" />
-            </video>
-          </div>
+          <video
+            className="absolute inset-0 w-full h-full object-cover opacity-45 pointer-events-none scale-110"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/images/hero_poster.webp"
+            aria-label="Girishbhai Gandevikar Jewellers — Heritage Bridal Showcase"
+          >
+            <source src="/images/download.mp4" type="video/mp4" />
+          </video>
         </motion.div>
 
         {/* Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-black/40 to-black/60 pointer-events-none" />
-        {/* FIX #7: bg-radial replaced with arbitrary gradient */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.30)_50%,rgba(20,18,16,0.80)_100%)]" />
+        <div className="absolute inset-0 bg-radial from-transparent via-black/30 to-[#141210]/80 pointer-events-none" />
 
         {/* Floating gold particles (decorative) */}
         {!reduce && (
@@ -218,6 +216,27 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* Gold rate ticker right after hero */}
+      <Marquee speed={40} className="py-3 bg-[#0F0D0B] border-y border-[#D7B46A]/20">
+        {[
+          '22K GOLD ₹13,465/g',
+          '24K GOLD ₹14,718/g',
+          '18K GOLD ₹11,155/g',
+          'SILVER ₹218/g',
+          'HUID 100% BIS HALLMARKED',
+          'GIA CERTIFIED DIAMONDS',
+          'KARATMETER VERIFIED PURITY',
+        ].map((item) => (
+          <span
+            key={item}
+            className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#D7B46A] whitespace-nowrap"
+          >
+            {item}
+            <span className="ml-8 text-[#8C1B22]">◆</span>
+          </span>
+        ))}
+      </Marquee>
+
       {/* =========================================
           2. HOUSE & PHILOSOPHY — image parallax
           ========================================= */}
@@ -252,8 +271,7 @@ export default function HomePage() {
                 </div>
               </TiltCard>
 
-              {/* FIX #5: card sits inside image on mobile, floats outside only on sm+ */}
-              <div className="absolute bottom-3 right-3 sm:-bottom-6 sm:-right-6 bg-[#141210] text-white p-5 border border-[#D7B46A] shadow-2xl rounded-xs max-w-[260px] sm:max-w-xs">
+              <div className="absolute -bottom-6 -right-4 sm:-right-6 bg-[#141210] text-white p-5 border border-[#D7B46A] shadow-2xl rounded-xs max-w-xs hidden sm:block">
                 <div className="flex items-center gap-2 text-[#D7B46A] mb-1">
                   <Award className="w-5 h-5" />
                   <span className="text-xs font-semibold uppercase tracking-wider">
@@ -320,7 +338,7 @@ export default function HomePage() {
       </section>
 
       {/* =========================================
-          3. OCCASIONS — staggered reveal + tilt
+          3. OCCASIONS — CAROUSEL
           ========================================= */}
       <section className="py-20 bg-[#FAF6EE] border-y border-[#E8E3D8] relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -338,54 +356,48 @@ export default function HomePage() {
               {t('home.moments.title', "Jewellery for Life's Many Moments")}
             </h2>
             <p className="text-xs sm:text-sm text-[#736C63] font-light leading-relaxed">
-              {t('home.moments.line1', "Sometimes it’s tradition. Sometimes it’s celebration. Sometimes, you just saw something and couldn’t stop thinking about it.")}{' '}
+              {t('home.moments.line1', "Sometimes it’s tradition. Sometimes it’s celebration.")}{' '}
               {t('home.moments.line2', 'Gold, diamonds, polki and silver, find what speaks to you.')}
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {categories.map((cat, idx) => (
-              <motion.div
-                key={idx}
-                initial={reduce ? false : { opacity: 0, y: 30 }}
-                whileInView={reduce ? false : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.5, delay: (idx % 4) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <TiltCard maxTilt={5}>
-                  <Link
-                    to="/services"
-                    className="group relative overflow-hidden bg-white border border-[#E8E3D8] rounded-xs shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
-                  >
-                    {/* FIX #10: aspect-[4/5] */}
-                    <div className="relative aspect-[4/5] overflow-hidden bg-[#F2ECE1]">
-                      <img
-                        src={cat.img}
-                        alt={cat.defaultName}
-                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-                      <div className="absolute bottom-3 left-3 right-3 text-white">
-                        <h3 className="font-serif text-xl sm:text-2xl font-medium tracking-wide">
-                          {t(cat.nameKey, cat.defaultName)}
-                        </h3>
-                      </div>
+          <Carousel
+            items={categories}
+            perView={{ base: 1, sm: 2, lg: 4 }}
+            interval={4500}
+            renderItem={(cat) => (
+              <TiltCard maxTilt={5}>
+                <Link
+                  to="/services"
+                  className="group relative overflow-hidden bg-white border border-[#E8E3D8] rounded-xs shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#F2ECE1]">
+                    <img
+                      src={cat.img}
+                      alt={cat.defaultName}
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <h3 className="font-serif text-xl sm:text-2xl font-medium tracking-wide">
+                        {t(cat.nameKey, cat.defaultName)}
+                      </h3>
                     </div>
-                    <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between space-y-2">
-                      <p className="text-[11px] text-[#736C63] leading-relaxed line-clamp-2 font-light">
-                        {cat.desc}
-                      </p>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#8C1B22] group-hover:translate-x-1 transition-transform">
-                        <span>View Collection</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </span>
-                    </div>
-                  </Link>
-                </TiltCard>
-              </motion.div>
-            ))}
-          </div>
+                  </div>
+                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between space-y-2">
+                    <p className="text-[11px] text-[#736C63] leading-relaxed line-clamp-2 font-light">
+                      {cat.desc}
+                    </p>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#8C1B22] group-hover:translate-x-1 transition-transform">
+                      <span>View Collection</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </Link>
+              </TiltCard>
+            )}
+          />
 
           <div className="text-center mt-12">
             <Link
@@ -432,12 +444,12 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
                 <TiltCard maxTilt={6}>
-                  <div className="group bg-white border border-[#E8E3D8] rounded-xs overflow-hidden shadow-sm hover:border-[#D7B46A] transition-all duration-300 h-full">
+                  <div className="group bg-white border border-[#E8E3D8] rounded-xs overflow-hidden shadow-2xs hover:border-[#D7B46A] transition-all duration-300 h-full">
                     <div className="relative aspect-square overflow-hidden bg-[#F2ECE1]">
                       <img
                         src={mat.img}
                         alt={mat.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
@@ -572,15 +584,15 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="relative aspect-square lg:aspect-auto min-h-[360px] overflow-hidden bg-stone-900">
-                <img
-                  src="/images/amya.webp"
-                  alt="AMYA Contemporary Jewellery by Girishbhai Gandevikar"
-                  className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-              </div>
+<div className="relative flex items-center justify-center overflow-hidden bg-stone-900 p-6 sm:p-8 lg:p-10">
+  <img
+    src="/images/amya.webp"
+    alt="AMYA Contemporary Jewellery by Girishbhai Gandevikar"
+    className="w-full h-auto max-h-[260px] sm:max-h-[300px] lg:max-h-[360px] object-contain object-center transition-transform duration-700 hover:scale-105"
+    loading="lazy"
+  />
+  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+</div>
             </div>
           </TiltCard>
         </div>
@@ -629,7 +641,7 @@ export default function HomePage() {
                 whileInView={reduce ? false : { opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-6 bg-white border border-[#E8E3D8] rounded-xs shadow-sm space-y-4 flex flex-col justify-between"
+                className="p-6 bg-white border border-[#E8E3D8] rounded-xs shadow-2xs space-y-4 flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -662,11 +674,10 @@ export default function HomePage() {
       </section>
 
       {/* =========================================
-          8. SHOWROOM — deep parallax backdrop (FIX #4: plain div)
+          8. SHOWROOM — deep parallax backdrop
           ========================================= */}
       <section className="py-20 bg-[#141210] text-white relative overflow-hidden">
-        {/* FIX #4: plain <div> so useParallax's transform isn't fought by Framer Motion */}
-        <div
+        <motion.div
           ref={showroomRef}
           aria-hidden="true"
           className="absolute inset-[-15%] pointer-events-none opacity-20 will-change-transform"
@@ -677,7 +688,7 @@ export default function HomePage() {
             className="w-full h-full object-cover"
             loading="lazy"
           />
-        </div>
+        </motion.div>
         <div className="absolute inset-0 bg-gradient-to-r from-[#141210] via-[#141210]/90 to-[#141210]/70 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
