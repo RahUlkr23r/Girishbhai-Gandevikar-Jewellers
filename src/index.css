@@ -1,27 +1,28 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --color-primary: #8c1b22;
-    --color-primary-dark: #6d141a;
-    --color-primary-light: #a8242c;
-    --color-gold: #d7b46a;
-    --color-gold-light: #ebd69f;
-    --color-gold-dark: #b89349;
-    --color-bg-ivory: #fdfbf7;
-    --color-surface-cream: #f9f5ec;
-    --color-obsidian: #141210;
-    --color-stone: #242220;
-    --color-border: #e8e3d8;
-    --color-text-main: #2b2825;
-    --color-text-muted: #736c63;
-  }
+@theme {
+  --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --color-primary: #8c1b22;
+  --color-primary-dark: #6d141a;
+  --color-primary-light: #a8242c;
+  --color-gold: #d7b46a;
+  --color-gold-light: #ebd69f;
+  --color-gold-dark: #b89349;
+  --color-bg-ivory: #fdfbf7;
+  --color-surface-cream: #f9f5ec;
+  --color-obsidian: #141210;
+  --color-stone: #242220;
+  --color-border: #e8e3d8;
+  --color-text-main: #2b2825;
+  --color-text-muted: #736c63;
+}
 
+@layer base {
   html {
     scroll-behavior: smooth;
     font-family: 'Jost', system-ui, -apple-system, sans-serif;
-    color: var(--color-text-main);
-    background-color: var(--color-bg-ivory);
+    color: var(--color-text-main, #2b2825);
+    background-color: var(--color-bg-ivory, #fdfbf7);
   }
 
   body {

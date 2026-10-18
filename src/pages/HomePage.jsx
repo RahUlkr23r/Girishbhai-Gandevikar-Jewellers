@@ -26,17 +26,18 @@ export default function HomePage() {
   const { openRates } = useGoldRates();
   const reduce = useReducedMotion();
 
-  // Hero parallax (scroll-linked with Framer Motion)
+  // Hero parallax
   const heroRef = useRef(null);
   const { scrollYProgress: heroProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
-  const heroVideoY = useTransform(heroProgress, [0, 1], ['0%', '18%']);
-  const heroContentY = useTransform(heroProgress, [0, 1], ['0%', '35%']);
-  const heroOpacity = useTransform(heroProgress, [0, 0.8], [1, 0]);
+  // FIX #3: reduced drift amounts so content never visibly overlaps the next section
+  const heroVideoY = useTransform(heroProgress, [0, 1], ['0%', '12%']);
+  const heroContentY = useTransform(heroProgress, [0, 1], ['0%', '6%']);
+  const heroOpacity = useTransform(heroProgress, [0, 0.85], [1, 0]);
 
-  // Section-level parallax (lightweight hook)
+  // Section-level parallax
   const philosophyImageRef = useParallax(0.12);
   const philosophyBgRef = useParallax(0.08);
   const schemeBgRef = useParallax(0.1);
@@ -83,23 +84,26 @@ export default function HomePage() {
           style={{ y: reduce ? 0 : heroVideoY }}
           className="absolute inset-0 will-change-transform"
         >
-          <video
-            className="absolute inset-0 w-full h-full object-cover opacity-45 pointer-events-none scale-110"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="/images/hero_poster.webp"
-            aria-label="Girishbhai Gandevikar Jewellers — Heritage Bridal Showcase"
-          >
-            <source src="/images/download.mp4" type="video/mp4" />
-          </video>
+          {/* FIX #6: wrapper with role="img" so aria-label is announced */}
+          <div role="img" aria-label="Girishbhai Gandevikar Jewellers — Heritage Bridal Showcase" className="w-full h-full">
+            <video
+              className="absolute inset-0 w-full h-full object-cover opacity-45 pointer-events-none scale-110"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              poster="/images/hero_poster.webp"
+            >
+              <source src="/images/download.mp4" type="video/mp4" />
+            </video>
+          </div>
         </motion.div>
 
         {/* Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-black/40 to-black/60 pointer-events-none" />
-        <div className="absolute inset-0 bg-radial from-transparent via-black/30 to-[#141210]/80 pointer-events-none" />
+        {/* FIX #7: bg-radial replaced with arbitrary gradient */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.30)_50%,rgba(20,18,16,0.80)_100%)]" />
 
         {/* Floating gold particles (decorative) */}
         {!reduce && (
@@ -248,7 +252,8 @@ export default function HomePage() {
                 </div>
               </TiltCard>
 
-              <div className="absolute -bottom-6 -right-4 sm:-right-6 bg-[#141210] text-white p-5 border border-[#D7B46A] shadow-2xl rounded-xs max-w-xs hidden sm:block">
+              {/* FIX #5: card sits inside image on mobile, floats outside only on sm+ */}
+              <div className="absolute bottom-3 right-3 sm:-bottom-6 sm:-right-6 bg-[#141210] text-white p-5 border border-[#D7B46A] shadow-2xl rounded-xs max-w-[260px] sm:max-w-xs">
                 <div className="flex items-center gap-2 text-[#D7B46A] mb-1">
                   <Award className="w-5 h-5" />
                   <span className="text-xs font-semibold uppercase tracking-wider">
@@ -350,13 +355,14 @@ export default function HomePage() {
                 <TiltCard maxTilt={5}>
                   <Link
                     to="/services"
-                    className="group relative overflow-hidden bg-white border border-[#E8E3D8] rounded-xs shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col"
+                    className="group relative overflow-hidden bg-white border border-[#E8E3D8] rounded-xs shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
                   >
-                    <div className="relative aspect-4/5 overflow-hidden bg-[#F2ECE1]">
+                    {/* FIX #10: aspect-[4/5] */}
+                    <div className="relative aspect-[4/5] overflow-hidden bg-[#F2ECE1]">
                       <img
                         src={cat.img}
                         alt={cat.defaultName}
-                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-108"
+                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
@@ -426,12 +432,12 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
                 <TiltCard maxTilt={6}>
-                  <div className="group bg-white border border-[#E8E3D8] rounded-xs overflow-hidden shadow-2xs hover:border-[#D7B46A] transition-all duration-300 h-full">
+                  <div className="group bg-white border border-[#E8E3D8] rounded-xs overflow-hidden shadow-sm hover:border-[#D7B46A] transition-all duration-300 h-full">
                     <div className="relative aspect-square overflow-hidden bg-[#F2ECE1]">
                       <img
                         src={mat.img}
                         alt={mat.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
@@ -623,7 +629,7 @@ export default function HomePage() {
                 whileInView={reduce ? false : { opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-6 bg-white border border-[#E8E3D8] rounded-xs shadow-2xs space-y-4 flex flex-col justify-between"
+                className="p-6 bg-white border border-[#E8E3D8] rounded-xs shadow-sm space-y-4 flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -656,10 +662,11 @@ export default function HomePage() {
       </section>
 
       {/* =========================================
-          8. SHOWROOM — deep parallax backdrop
+          8. SHOWROOM — deep parallax backdrop (FIX #4: plain div)
           ========================================= */}
       <section className="py-20 bg-[#141210] text-white relative overflow-hidden">
-        <motion.div
+        {/* FIX #4: plain <div> so useParallax's transform isn't fought by Framer Motion */}
+        <div
           ref={showroomRef}
           aria-hidden="true"
           className="absolute inset-[-15%] pointer-events-none opacity-20 will-change-transform"
@@ -670,7 +677,7 @@ export default function HomePage() {
             className="w-full h-full object-cover"
             loading="lazy"
           />
-        </motion.div>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-[#141210] via-[#141210]/90 to-[#141210]/70 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
