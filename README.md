@@ -1,16 +1,32 @@
-# React + Vite
+# Girishbhai-Gandevikar-Jewellers
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Luxury jewelry web experience built with React, Vite, Tailwind CSS, Framer Motion, and Lucide Icons.
 
-Currently, two official plugins are available:
+## Features
+- Interactive physics-based Carousel showcase with smooth drag and infinite loop
+- Real-time gold & silver rate ticker marquee
+- Parallax and luxury micro-interactions
+- Responsive luxury gold aesthetic theme
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
+- **Framework:** React 19 + Vite
+- **Styling:** Tailwind CSS v4
+- **Animations:** Framer Motion
+- **Icons:** Lucide React
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Installation
+```bash
+npm install
+```
 
-## Expanding the Oxlint configuration
+### Development
+```bash
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+### Production Build
+```bash
+npm run build
+```
